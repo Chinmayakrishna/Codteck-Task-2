@@ -1,0 +1,110 @@
+Setup Backend
+mkdir backend
+cd backend
+npm init -y
+npm install express mongoose body-parser cors
+
+Backend
+
+mkdir backend
+cd backend
+npm init -y
+npm install express mongoose body-parser cors
+
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/blog', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+const PostSchema = new mongoose.Schema({
+    title: String,
+    content: String,
+});
+
+const Post = mongoose.model('Post', PostSchema);
+
+// Routes
+app.get('/posts', async (req, res) => {
+    const posts = await Post.find();
+    res.json(posts);
+});
+
+app.post('/posts', async (req, res) => {
+    const newPost = new Post(req.body);
+    await newPost.save();
+    res.json(newPost);
+});
+
+app.put('/posts/:id', async (req, res) => {
+    const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedPost);
+});
+
+app.delete('/posts/:id', async (req, res) => {
+    await Post.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Post deleted' });
+});
+
+const PORT = 5000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+Frontend: React.js
+
+npx create-react-app blog-frontend
+cd blog-frontend
+npm install axios
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+
+ReactDOM.render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>,
+    document.getElementById('root')
+);
+
+
+.App {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.post {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+input, textarea {
+    display: block;
+    margin: 10px 0;
+    width: 100%;
+    padding: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
